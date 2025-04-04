@@ -1,0 +1,386 @@
+import React, { useEffect, useRef } from 'react';
+
+const ETHFragmentAnimation = () => {
+  const canvasRef = useRef(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    // Set canvas dimensions
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    // Colors
+    const baseBlue = '#0057ff'; // Arbitrum blue
+    const ethBlue = '#627EEA'; // ETH blue
+    
+    // Generate wallet address fragment (either hex or ENS)
+    const generateWalletFragment = () => {
+      // 30% chance of generating an ENS name instead of hex address
+      if (Math.random() < 0.3) {
+        return generateENSName();
+      } else {
+        const chars = '0123456789abcdef';
+        let fragment = '0x';
+        const length = 4 + Math.floor(Math.random() * 8); // Random length between 4-12 chars
+        for (let i = 0; i < length; i++) {
+          fragment += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return fragment;
+      }
+    };
+    
+    // Generate ENS name
+    const generateENSName = () => {
+      const prefixes = ['vitalik', 'crypto', 'eth', 'nft', 'defi', 'based', 'punk', 'ape', 'degen', 'moon', 'pepe', 
+                       'trader', 'dao', 'meta', 'frens', 'anon', 'satoshi', 'hodl', 'web3', 'pixel'];
+      const suffixes = ['guy', 'dev', 'bro', 'lord', 'king', 'wizard', 'chad', 'bull', 'bear', 'whale', 'vc', 
+                       'founder', 'maxi', 'dude', 'ser', 'enjoyer', 'collector'];
+      
+      // Either prefix+suffix or just prefix
+      const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+      
+      if (Math.random() < 0.3) {
+        // 30% chance of just using the prefix
+        return randomPrefix + '.eth';
+      } else {
+        // 70% chance of prefix+suffix
+        const randomSuffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+        return randomPrefix + randomSuffix + '.eth';
+      }
+    };
+    
+    // Wallet fragment class
+    class WalletFragment {
+      constructor() {
+        this.walletText = generateWalletFragment();
+        this.x = -200 - (Math.random() * 500); // Start off-screen to the left
+        this.y = 120 + (Math.random() * (canvas.height - 300)); // Better vertical spacing
+        this.speedX = 1.5 + Math.random() * 2.5;  // Faster initial speed
+        this.opacity = 0.8 + Math.random() * 0.2;
+        this.size = 12 + Math.floor(Math.random() * 4);
+        this.color = Math.random() > 0.85 ? baseBlue : '#ffffff';
+        this.hasPassedFilter = false;
+        this.insights = [];
+      }
+      
+      update() {
+        // If not yet at filter, move toward it
+        if (!this.hasPassedFilter) {
+          this.x += this.speedX;
+          
+          // Check if fragment has reached the filter
+          if (this.x > canvas.width / 2 - 20) {
+            this.hasPassedFilter = true;
+            this.generateInsights();
+          }
+        } else {
+          // Update insights
+          for (let insight of this.insights) {
+            insight.x += insight.speedX;
+            insight.opacity = Math.max(0, insight.opacity - 0.002); // Slower fade for more visibility
+          }
+        }
+        
+        // Remove fragment if all insights have faded or gone off-screen
+        return !(this.hasPassedFilter && this.insights.every(i => i.opacity <= 0 || i.x > canvas.width));
+      }
+      
+      generateInsights() {
+        // Create a grouped set of insights for this wallet
+        
+        // Colors for different insight types
+        const colors = {
+          github: baseBlue,     // Blue for Github
+          farcaster: '#FFD700', // Yellow for Farcaster
+          gitcoin: '#FF4500'    // Red for Gitcoin
+        };
+        
+        // Create 3-4 grouped insights for this wallet
+        const insightGroup = [];
+        
+        // Always include Github developer
+        insightGroup.push({
+          text: "Github developer",
+          color: colors.github,
+          type: 'github'
+        });
+        
+        // Add Farcaster OG if random
+        if (Math.random() > 0.3) {
+          insightGroup.push({
+            text: "Farcaster OG",
+            color: colors.farcaster,
+            type: 'farcaster'
+          });
+        }
+        
+        // Add Gitcoin Donor if random
+        if (Math.random() > 0.4) {
+          insightGroup.push({
+            text: "Gitcoin Donor",
+            color: colors.gitcoin,
+            type: 'gitcoin'
+          });
+        }
+        
+        // Add random extra tags
+        const extraTags = ['DeFi User', 'NFT Collector', 'DAO Voter', 'L2 Bridge User', 'Staker'];
+        if (Math.random() > 0.5) {
+          const randomTag = extraTags[Math.floor(Math.random() * extraTags.length)];
+          insightGroup.push({
+            text: randomTag,
+            color: '#FFFFFF',
+            type: 'tag'
+          });
+        }
+        
+        // Position insights at the filter point initially
+        const baseY = this.y;
+        const baseX = canvas.width / 2;
+        
+        // Add all insights to the array with proper positioning for fan effect
+        for (let i = 0; i < insightGroup.length; i++) {
+          const insight = insightGroup[i];
+          this.insights.push({
+            text: insight.text,
+            x: baseX,
+            y: baseY,  // All start at same point for fan effect
+            targetX: 0, // Will be set in draw()
+            targetY: 0, // Will be set in draw()
+            speedX: 0.7 + Math.random() * 0.5, // Faster insight movement
+            color: insight.color,
+            opacity: 1.0,
+            type: insight.type
+          });
+        }
+      }
+      
+      draw() {
+        // Draw wallet fragment
+        ctx.font = `${this.size}px monospace`;
+        ctx.fillStyle = this.color;
+        ctx.globalAlpha = this.hasPassedFilter ? this.opacity * 0.3 : this.opacity;
+        ctx.fillText(this.walletText, this.x, this.y);
+        ctx.globalAlpha = 1.0;
+        
+        // Draw insights if passed filter
+        if (this.hasPassedFilter && this.insights.length > 0) {
+          // Calculate fan-out positions for insights
+          const fanRadius = 100; // Radius of fan
+          const fanAngleStart = -Math.PI/4; // Start angle (upper right)
+          const fanAngleEnd = Math.PI/4;    // End angle (lower right)
+          
+          // Get shortened wallet name for display
+          const displayWallet = this.walletText.length > 15 
+            ? this.walletText.substring(0, 13) + '...' 
+            : this.walletText;
+            
+          // Update insight positions if needed for fan effect
+          if (!this.fanPositionsSet) {
+            const angleDelta = (fanAngleEnd - fanAngleStart) / (this.insights.length - 1 || 1);
+            
+            for (let i = 0; i < this.insights.length; i++) {
+              const angle = fanAngleStart + (angleDelta * i);
+              const insightX = this.x + 100 + Math.cos(angle) * fanRadius;
+              const insightY = this.y + Math.sin(angle) * fanRadius;
+              
+              this.insights[i].targetX = insightX;
+              this.insights[i].targetY = insightY;
+              
+              // Add slight movement toward target
+              const dx = (this.insights[i].targetX - this.insights[i].x) * 0.08;
+              const dy = (this.insights[i].targetY - this.insights[i].y) * 0.08;
+              
+              this.insights[i].x += dx;
+              this.insights[i].y += dy;
+            }
+            
+            this.fanPositionsSet = true;
+          } else {
+            // Continue movement toward fan targets
+            for (let i = 0; i < this.insights.length; i++) {
+              const dx = (this.insights[i].targetX - this.insights[i].x) * 0.05;
+              const dy = (this.insights[i].targetY - this.insights[i].y) * 0.05;
+              
+              this.insights[i].x += dx;
+              this.insights[i].y += dy;
+            }
+          }
+          
+          // Draw connecting lines from wallet to all insights
+          for (let insight of this.insights) {
+            ctx.beginPath();
+            ctx.moveTo(this.x + 20, this.y);
+            ctx.lineTo(insight.x - 5, insight.y);
+            ctx.strokeStyle = `rgba(255, 255, 255, ${insight.opacity * 0.3})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+          
+          // Draw all insight cards in Palantir style
+          for (let insight of this.insights) {
+            // Card dimensions
+            const cardWidth = 140;
+            const cardHeight = 70;
+            const cardX = insight.x;
+            const cardY = insight.y - 20;
+            
+            // Draw card background with angles
+            ctx.globalAlpha = insight.opacity * 0.8;
+            ctx.fillStyle = '#111111';
+            
+            // Main card background
+            ctx.beginPath();
+            ctx.moveTo(cardX, cardY);
+            ctx.lineTo(cardX + cardWidth - 10, cardY);
+            ctx.lineTo(cardX + cardWidth, cardY + 10);
+            ctx.lineTo(cardX + cardWidth, cardY + cardHeight);
+            ctx.lineTo(cardX, cardY + cardHeight);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Card border
+            ctx.strokeStyle = insight.color;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // Card header line
+            ctx.beginPath();
+            ctx.moveTo(cardX, cardY + 20);
+            ctx.lineTo(cardX + cardWidth, cardY + 20);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+            
+            // Card header text - wallet name
+            ctx.font = '10px monospace';
+            ctx.fillStyle = '#AAAAAA';
+            ctx.fillText(`INSIGHT: ${displayWallet}`, cardX + 5, cardY + 14);
+            
+            // Insight text
+            ctx.font = 'bold 13px monospace';
+            ctx.fillStyle = insight.color;
+            ctx.fillText(insight.text, cardX + 5, cardY + 40);
+            
+            ctx.globalAlpha = 1.0;
+          }
+        }
+      }
+    }
+    
+    // Generate random handles for social accounts
+    function generateRandomHandle() {
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789_';
+      let handle = '';
+      const length = 5 + Math.floor(Math.random() * 8);
+      for (let i = 0; i < length; i++) {
+        handle += chars[Math.floor(Math.random() * chars.length)];
+      }
+      return handle;
+    }
+    
+    // Animation variables
+    const fragments = [];
+    const maxFragments = 30;
+    
+    // Animation loop
+    function animate() {
+      // Clear canvas
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw grid background
+      drawGrid();
+      
+      // Draw filter line in middle
+      ctx.beginPath();
+      ctx.moveTo(canvas.width / 2, canvas.height * 0.15);
+      ctx.lineTo(canvas.width / 2, canvas.height * 0.85);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      
+      // Add filter label
+      ctx.font = '10px monospace';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('FILTER', canvas.width / 2 - 20, canvas.height * 0.13);
+      
+      // Draw fragments
+      fragments.forEach(fragment => {
+        fragment.draw();
+      });
+      
+      // Update fragments and filter out dead ones
+      for (let i = fragments.length - 1; i >= 0; i--) {
+        const isAlive = fragments[i].update();
+        if (!isAlive) {
+          fragments.splice(i, 1);
+        }
+      }
+      
+      // Add new fragments if needed
+      if (fragments.length < maxFragments && Math.random() > 0.9) {
+        fragments.push(new WalletFragment());
+      }
+      
+      // Header text
+      ctx.font = '14px monospace';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText('ETH WALLET FRAGMENTS', 20, 30);
+      ctx.font = '10px monospace';
+      ctx.fillText('INSIGHTS', canvas.width * 0.75, 30);
+      
+      requestAnimationFrame(animate);
+    }
+    
+    function drawGrid() {
+      const gridSize = 40;
+      ctx.beginPath();
+      
+      // Vertical lines
+      for (let x = 0; x < canvas.width; x += gridSize) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+      }
+      
+      // Horizontal lines
+      for (let y = 0; y < canvas.height; y += gridSize) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+      }
+      
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    
+    // Start animation
+    animate();
+    
+    // Handle window resize
+    const handleResize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+  
+  return (
+    <div className="w-full h-screen bg-black overflow-hidden">
+      <canvas 
+        ref={canvasRef}
+        className="w-full h-full"
+      />
+    </div>
+  );
+};
+
+export default ETHFragmentAnimation;
