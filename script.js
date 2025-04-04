@@ -70,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Sample queries to cycle through
     const queries = [
       "Who is building dev tools for prediction markets on Base?",
+      "Who should I connect with to re-engage my lapsed community members?",
       "What are the most interesting Arbitrum gaming hackathon projects?",
       "Which protocols will be impacted if this DAO proposal passes?",
       "Which Farcaster channels do my most engaged users belong to?"
