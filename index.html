@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quotient - Find Your (Onchain) People</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-bg-darker text-white overflow-x-hidden">
@@ -12,7 +14,7 @@
     <div class="text-xl font-bold tracking-wide mb-3 sm:mb-0">QUOTIENT</div>
     <div class="hidden sm:flex flex-wrap justify-center gap-3 sm:gap-4">
       <a href="https://farcaster.usequotient.xyz/" class="bg-purple-warpcast/10 text-purple-warpcast border border-purple-warpcast/30 px-3 sm:px-4 md:px-4 py-2 text-xs sm:text-sm rounded hover:bg-purple-warpcast/20 hover:border-purple-warpcast/50 hover:shadow-[0_0_15px_rgba(138,99,210,0.4)] transition-all uppercase tracking-wider flex items-center justify-center">Live Demo on Farcaster</a>
-      <button class="bg-blue-primary/10 text-blue-bright border border-blue-bright/30 px-3 sm:px-4 md:px-4 py-2 text-xs sm:text-sm rounded hover:bg-blue-primary/20 hover:border-blue-bright/50 hover:shadow-[0_0_15px_rgba(0,87,255,0.4)] transition-all uppercase tracking-wider flex items-center justify-center">Pricing</button>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcoMQdDZUmzbzBaG28Dd7i2mVuNh5dIZiJqpH3_Y1CeEU5-Q/viewform?usp=dialog" class="bg-blue-primary/10 text-blue-bright border border-blue-bright/30 px-3 sm:px-4 md:px-4 py-2 text-xs sm:text-sm rounded hover:bg-blue-primary/20 hover:border-blue-bright/50 hover:shadow-[0_0_15px_rgba(0,87,255,0.4)] transition-all uppercase tracking-wider flex items-center justify-center">Pricing</a>
     </div>
   </header>
 
@@ -74,6 +76,25 @@
         </div>
       </div>
     </div>
+    
+    <!-- Quotient Data at a Glance -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 sm:mb-16 md:mb-20">
+      <div class="bg-card/30 border border-default/20 rounded-lg p-5 text-center">
+        <div class="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-bright mb-2">500k+</div>
+        <p class="text-sm sm:text-base text-text-muted">builders, creators, developers, and governance contributors</p>
+      </div>
+      
+      <div class="bg-card/30 border border-default/20 rounded-lg p-5 text-center">
+        <div class="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-bright mb-2">20m+</div>
+        <p class="text-sm sm:text-base text-text-muted">posts, articles, forum threads, and DAO proposals</p>
+      </div>
+      
+      <div class="bg-card/30 border border-default/20 rounded-lg p-5 text-center">
+        <div class="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-bright mb-2">10+</div>
+        <p class="text-sm sm:text-base text-text-muted">Web2+Web3 platforms covered, including Farcaster, Discourse, Tally, Github Gitcoin</p>
+      </div>
+    </div>
+    
     <div class="flex flex-col gap-8 md:gap-12 items-center">
       <div class="w-full">
         <p class="text-base sm:text-lg md:text-lg text-text-muted mb-6 sm:mb-8 md:mb-10 leading-relaxed max-w-3xl mx-auto text-left">
@@ -124,36 +145,18 @@
         </div>
       </div>
       
-      <!-- <div class="lg:w-1/3 flex flex-wrap gap-4 sm:gap-6 md:gap-6 justify-center items-center mt-8 lg:mt-0">
-        <img src="icons/logo-farcaster.svg" alt="Farcaster" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
-        <img src="icons/logo-github.svg" alt="GitHub" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
-        <img src="icons/logo-discourse.svg" alt="Discourse" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
-        <img src="icons/logo-gitcoin.svg" alt="Gitcoin" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
-        <img src="icons/logo-x.svg" alt="X" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
-        <img src="icons/logo-mirror.svg" alt="Mirror" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
-        <img src="icons/logo-snapshot.svg" alt="Snapshot" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
-        <img src="icons/logo-tally.svg" alt="Tally" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
-      </div> -->
-    </div>
-  </section>
-
-  <!-- BLOCK EXPLORERS VS QUOTIENT -->
-  <section class="py-12 sm:py-16 md:py-20 px-4 sm:px-5 flex justify-center">
-    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 bg-card/50 border border-default/30 rounded-lg p-6 sm:p-8 md:p-10">
-      <div class="w-full md:flex-1 text-center p-4 sm:p-6 md:p-6 bg-card/80 border border-default/20 rounded-md">
-        <h3 class="text-lg sm:text-xl md:text-xl font-bold mb-2 sm:mb-3 md:mb-3">Block Explorers</h3>
-        <p class="text-text-muted text-sm sm:text-base md:text-base">Good for transactions, not search & discovery</p>
-      </div>
-      
-      <div class="text-xl sm:text-2xl md:text-2xl font-bold text-text-muted py-2">VS</div>
-      
-      <div class="w-full md:flex-1 text-center p-4 sm:p-6 md:p-6 bg-gradient-to-br from-blue-primary/10 to-purple-warpcast/10 border border-blue-primary/20 rounded-md">
-        <h3 class="text-lg sm:text-xl md:text-xl font-bold mb-2 sm:mb-3 md:mb-3 text-blue-bright">Quotient</h3>
-        <p class="text-text-muted text-sm sm:text-base md:text-base">Search & discover builders across platforms</p>
+      <div class="lg:w-1/3 flex flex-wrap gap-4 sm:gap-6 md:gap-6 justify-center items-center mt-8 lg:mt-0">
+        <img src="https://warpcast.com/favicon.ico" alt="Farcaster" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
+        <img src="https://github.githubassets.com/favicons/favicon.svg" alt="GitHub" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
+        <img src="https://www.discourse.org/a/img/favicon.png" alt="Discourse" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
+        <img src="https://gitcoin.co/static/v2/images/favicon.ico" alt="Gitcoin" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
+        <img src="https://abs.twimg.com/responsive-web/client-web/icon-svg.168b89da.svg" alt="X" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
+        <img src="https://mirror.xyz/favicon-32x32.png" alt="Mirror" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
+        <img src="https://snapshot.org/favicon.ico" alt="Snapshot" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
+        <img src="https://www.tally.xyz/favicon.ico" alt="Tally" class="h-8 sm:h-10 md:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
       </div>
     </div>
   </section>
-
   <!-- USE CASES SECTION -->
   <section class="py-12 sm:py-16 md:py-20 px-4 sm:px-5 bg-gradient-to-b from-bg-dark/50 to-bg-darker">
     <h2 class="text-2xl sm:text-3xl md:text-3xl font-bold text-center mb-8 sm:mb-12 md:mb-16">Use Cases</h2>
@@ -190,10 +193,7 @@
       <div class="bg-[rgba(15,15,25,0.75)] border border-white/15 rounded-lg p-5 sm:p-6 md:p-8 relative overflow-hidden" id="contact-form">
         <h3 class="text-xl sm:text-2xl md:text-2xl font-bold mb-3 sm:mb-4 md:mb-4 text-blue-bright">API & Data Access</h3>
         <p class="text-sm sm:text-base md:text-base text-text-muted mb-6 sm:mb-8 md:mb-8">Get direct access to our Accounts API, covering 500k+ builder wallets across Ethereum and Solana. Connect wallets to social accounts and onchain activity.</p>
-        <form class="space-y-3 sm:space-y-4 md:space-y-4">
-          <input type="email" placeholder="Email address" required class="w-full bg-bg-dark/80 border border-default/30 rounded px-3 sm:px-4 md:px-4 py-2 sm:py-3 md:py-3 text-sm sm:text-base md:text-base text-white placeholder-text-muted/70 focus:outline-none focus:ring-2 focus:ring-blue-primary/30">
-          <button type="submit" class="inline-block bg-blue-primary hover:bg-[#0046cc] text-white px-4 sm:px-6 md:px-6 py-2 sm:py-3 md:py-3 rounded text-xs sm:text-sm md:text-sm font-medium uppercase tracking-wider transition-all hover:shadow-[0_0_20px_rgba(0,87,255,0.4)]">Request Access</button>
-        </form>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSdcoMQdDZUmzbzBaG28Dd7i2mVuNh5dIZiJqpH3_Y1CeEU5-Q/viewform?usp=dialog" class="inline-block bg-blue-primary hover:bg-[#0046cc] text-white px-4 sm:px-6 md:px-6 py-2 sm:py-3 md:py-3 rounded text-xs sm:text-sm md:text-sm font-medium uppercase tracking-wider transition-all hover:shadow-[0_0_20px_rgba(0,87,255,0.4)]">Request Access</a>
       </div>
     </div>
   </section>
@@ -201,10 +201,6 @@
   <!-- FINAL CTA SECTION -->
   <section class="py-12 sm:py-16 md:py-20 px-4 sm:px-5 bg-gradient-to-b from-bg-dark to-bg-darker text-center">
     <h2 class="text-2xl sm:text-3xl md:text-3xl font-bold mb-6 sm:mb-8 md:mb-10">÷</h2>
-    <div class="flex flex-col sm:flex-row flex-wrap gap-4 sm:gap-6 justify-center">
-      <a href="https://farcaster.usequotient.xyz/" class="bg-purple-warpcast text-white px-4 sm:px-6 md:px-6 py-2.5 sm:py-3 md:py-3 text-xs sm:text-sm md:text-sm font-medium rounded uppercase tracking-wider relative overflow-hidden hover:bg-purple-warpcast/90 transition-all before:content-[''] before:absolute before:top-0 before:left-[-100%] before:w-full before:h-full before:bg-white/10 before:transition-all hover:before:left-[100%] hover:shadow-[0_0_20px_rgba(138,99,210,0.4)]">Try Quotient Research Assistant</a>
-      <a href="https://docs.google.com/forms/d/15XmwZPtz89IJtZMPf4zRq8X90ZsdShHCgYIJD7fRYfY/edit" class="bg-transparent border border-white/20 text-white px-4 sm:px-6 md:px-6 py-2.5 sm:py-3 md:py-3 text-xs sm:text-sm md:text-sm font-medium rounded uppercase tracking-wider relative overflow-hidden hover:bg-white/5 transition-all before:content-[''] before:absolute before:top-0 before:left-[-100%] before:w-full before:h-full before:bg-white/10 before:transition-all hover:before:left-[100%]">Request API/Data Access</a>
-    </div>
   </section>
 
   <!-- FOOTER -->
