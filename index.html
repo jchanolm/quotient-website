@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quotient - Find Your (Onchain) People</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Remove the circle background from the key-point icons */
+    .key-point-icon {
+      background-color: transparent; /* was rgba(0, 87, 255, 0.1) */
+      border-radius: 0;             /* remove any rounded edges */
+    }
+
+    /* Make product-card containers more minimalist (remove the colored bars) */
+    .product-card::before {
+      content: none !important;
+    }
+
+    /* If you want them slightly more visible, you can tweak the background & border: */
+    .product-card {
+      background-color: rgba(15, 15, 25, 0.75); /* still dark, but slightly more opaque for readability */
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    /* OPTIONAL: If your "insight" cards or overlay text is too faint, 
+       you can also update their background or text color like so: */
+    .insight-card {
+      background-color: rgba(20, 20, 30, 0.9) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      color: #fff !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">QUOTIENT</div>
+    <div class="header-actions">
+      <a href="https://warpcast.com/quotient" class="header-btn farcaster">Farcaster Research Assistant</a>
+      <button class="header-btn">Request Access</button>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero-section" id="hero">
+    <canvas id="animationCanvas"></canvas>
+    <div class="hero-content">
+      <h1>Find Your <span class="highlight">People</span></h1>
+      <p>Quotient connects wallets to the platforms where onchain builders work and play—helping you understand the people behind the addresses and discover new opportunities.</p>
+      
+      <!-- Query Box - Centered -->
+      <div class="query-box">
+        <div class="query-header">
+          <svg class="query-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <div class="query-title">Builder Query</div>
+        </div>
+        <div class="query-content">
+          <span id="query-text"></span><span class="cursor"></span>
+        </div>
+        <div class="query-status">
+          <span class="query-status-icon running"></span>
+          <span id="query-status-text">Ready to search...</span>
+        </div>
+      </div>
+      
+      <div class="cta-buttons">
+        <a href="https://warpcast.com/quotient" class="cta-btn primary farcaster">Try Farcaster Research Assistant</a>
+        <a href="#contact-form" class="cta-btn secondary">Request API Access</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCK EXPLORERS VS QUOTIENT -->
+  <section class="block-explorer-section">
+    <div class="explorer-comparison">
+      <div class="explorer-item">
+        <h3>Block Explorers</h3>
+        <p>Good for transactions, not search & discovery</p>
+        <div class="explorer-visual">
+          <img src="icons/block-explorer.svg" alt="Block Explorer">
+        </div>
+      </div>
+      
+      <div class="vs-divider">VS</div>
+      
+      <div class="explorer-item quotient">
+        <h3>Quotient</h3>
+        <p>Search & discover builders across platforms</p>
+        <div class="explorer-visual">
+          <img src="icons/context-engine.svg" alt="Context Engine">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS SECTION -->
+  <section class="how-it-works">
+    <h2 class="section-title">How It Works</h2>
+    <div class="visualization-container">
+      <canvas id="howItWorksCanvas"></canvas>
+      <div class="visualization-labels">
+        <div class="vis-label" id="label-wallets">Wallet Addresses</div>
+        <div class="vis-label" id="label-context">Context Engine</div>
+        <div class="vis-label" id="label-insights">Builder Insights</div>
+      </div>
+    </div>
+    <div class="how-it-works-content">
+      <div class="how-it-works-text">
+        <p>Traditional block explorers only show you raw wallet data. Quotient goes deeper—connecting onchain identities to the social platforms, code repos, and forums they actually use. We call it our 'Context Engine.'</p>
+        
+        <div class="key-points">
+          <div class="key-point">
+            <div class="key-point-icon">
+              <img src="icons/icon-database.svg" alt="Database Icon">
+            </div>
+            <div class="key-point-content">
+              <h4>Quotient Core</h4>
+              <p>Our graph database that unifies data from Farcaster, Discourse, Gitcoin, X, Mirror/Paragraph, Tally, Snapshot, and more.</p>
+            </div>
+          </div>
+          
+          <div class="key-point">
+            <div class="key-point-icon">
+              <img src="icons/icon-link.svg" alt="Link Icon">
+            </div>
+            <div class="key-point-content">
+              <h4>Wallet-to-Platform Linking</h4>
+              <p>Connect a wallet address to GitHub, X, Warpcast in seconds.</p>
+            </div>
+          </div>
+          
+          <div class="key-point">
+            <div class="key-point-icon">
+              <img src="icons/icon-context.svg" alt="Context Icon">
+            </div>
+            <div class="key-point-content">
+              <h4>Unified Context</h4>
+              <p>Once linked, you see all relevant forum posts, casts, code repos, and other signals—so you can truly understand the builder.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="platform-logos">
+        <img src="icons/logo-farcaster.svg" alt="Farcaster" class="platform-logo">
+        <img src="icons/logo-github.svg" alt="GitHub" class="platform-logo">
+        <img src="icons/logo-discourse.svg" alt="Discourse" class="platform-logo">
+        <img src="icons/logo-gitcoin.svg" alt="Gitcoin" class="platform-logo">
+        <img src="icons/logo-x.svg" alt="X" class="platform-logo">
+        <img src="icons/logo-mirror.svg" alt="Mirror" class="platform-logo">
+        <img src="icons/logo-snapshot.svg" alt="Snapshot" class="platform-logo">
+        <img src="icons/logo-tally.svg" alt="Tally" class="platform-logo">
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES SECTION -->
+  <section class="use-cases-section">
+    <h2 class="section-title">Use Cases</h2>
+    <div class="use-cases-container">
+      <div class="use-cases-cards">
+        <div class="use-case-card">
+          <h3>Community & Ecosystem Growth</h3>
+          <p>Grow your developer community by spotting active contributors and nurturing relationships.</p>
+        </div>
+        
+        <div class="use-case-card">
+          <h3>Sales & Recruiting</h3>
+          <p>Quickly identify and reach out to high-signal builders, potential hires, or promising projects.</p>
+        </div>
+        
+        <div class="use-case-card">
+          <h3>Platform Personalization</h3>
+          <p>Create personalized experiences and recommendations based on user interests and activities.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS SECTION -->
+  <section class="products-section">
+    <h2 class="section-title">Access Quotient</h2>
+    <div class="products-cards">
+      <div class="product-card research">
+        <h3>Farcaster Research</h3>
+        <p>Search Farcaster's builder graph with natural language. Find relevant builders, generate leads, discover talent, or identify interesting projects to follow.</p>
+        <a href="https://warpcast.com/quotient" class="product-card-btn">Open in Warpcast</a>
+      </div>
+      
+      <div class="product-card api" id="contact-form">
+        <h3>API & Data Access</h3>
+        <p>Get direct access to our Accounts API, covering 500k+ builder wallets across Ethereum and Solana. Connect wallets to social accounts and onchain activity.</p>
+        <form class="api-form">
+          <input type="email" placeholder="Email address" required>
+          <button type="submit" class="product-card-btn">Request Access</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA SECTION -->
+  <section class="final-cta">
+    <h2>Ready to explore Quotient?</h2>
+    <div class="final-cta-buttons">
+      <a href="https://warpcast.com/quotient" class="cta-btn primary farcaster">Try Quotient Research Assistant</a>
+      <a href="https://docs.google.com/forms/d/15XmwZPtz89IJtZMPf4zRq8X90ZsdShHCgYIJD7fRYfY/edit" class="cta-btn secondary">Request API/Data Access</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 Quotient</p>
+  </footer>
+
+  <!-- SCRIPT -->
+  <script src="script.js"></script>
+</body>
+</html>
