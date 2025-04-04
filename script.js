@@ -1,4 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('.smooth-scroll').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    
     // Main animation canvas
     const canvas = document.getElementById('animationCanvas');
     const ctx = canvas.getContext('2d');
@@ -6,14 +23,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // Query elements
     const queryText = document.getElementById('query-text');
     const queryStatusText = document.getElementById('query-status-text');
-    const queryStatusIcon = document.querySelector('.query-status-icon');
+    // Use the pulse indicator that's already in the HTML
+    const queryStatusIndicator = document.querySelector('#query-status-text').previousElementSibling;
     
-    // How it works canvas
-    const howItWorksCanvas = document.getElementById('howItWorksCanvas');
-    const howCtx = howItWorksCanvas ? howItWorksCanvas.getContext('2d') : null;
+    // Address animation canvas
+    const addressAnimationCanvas = document.getElementById('addressAnimationCanvas');
+    const addressCtx = addressAnimationCanvas ? addressAnimationCanvas.getContext('2d') : null;
   
     // Set canvas dimensions
-    let width, height, howWidth, howHeight;
+    let width, height, addressWidth, addressHeight;
     function resizeCanvas() {
       // Main canvas
       width = window.innerWidth;
@@ -21,13 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
       canvas.width = width;
       canvas.height = height;
       
-      // How it works canvas
-      if (howItWorksCanvas) {
-        const container = howItWorksCanvas.parentElement;
-        howWidth = container.clientWidth;
-        howHeight = container.clientHeight;
-        howItWorksCanvas.width = howWidth;
-        howItWorksCanvas.height = howHeight;
+      // Address animation canvas
+      if (addressAnimationCanvas) {
+        const container = addressAnimationCanvas.parentElement;
+        addressWidth = container.clientWidth;
+        addressHeight = container.clientHeight;
+        addressAnimationCanvas.width = addressWidth;
+        addressAnimationCanvas.height = addressHeight;
       }
     }
     window.addEventListener('resize', resizeCanvas);
@@ -42,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize main constellation
     const wallets = [];
     const connections = [];
-    const maxWallets = 120;
+    const maxWallets = 80; // Reduced maximum number of wallets
     
     // Initialize how it works visualization
     const howWallets = [];
@@ -53,7 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const queries = [
       "Who is building dev tools for prediction markets on Base?",
       "What are the most interesting Arbitrum gaming hackathon projects?",
-      "Who is doing the best writing on Web3 culture on Farcaster?"
+      "Who is doing the best writing on Web3 culture on Farcaster?",
+      "Find builders contributing to Solidity libraries in the last 6 months",
+      "Which wallets are active in both Optimism governance and development?"
     ];
     
     // Platform types for how it works
@@ -134,15 +154,15 @@ document.addEventListener('DOMContentLoaded', () => {
           this.y = height / 2 + Math.sin(angle) * radius;
         }
         
-        // Movement
-        this.vx = (Math.random() - 0.5) * 0.8;
-        this.vy = (Math.random() - 0.5) * 0.8;
+        // Movement (drastically slower)
+        this.vx = (Math.random() - 0.5) * 0.05; // Drastically reduced
+        this.vy = (Math.random() - 0.5) * 0.05; // Drastically reduced
         
-        // Add some oscillation to movement
+        // Add some oscillation to movement (drastically slower)
         this.oscillateX = Math.random() < 0.5;
         this.oscillateY = Math.random() < 0.5;
-        this.oscillationSpeed = 0.02 + Math.random() * 0.03;
-        this.oscillationAmplitude = 0.5 + Math.random() * 1.5;
+        this.oscillationSpeed = 0.002 + Math.random() * 0.003; // Drastically reduced
+        this.oscillationAmplitude = 0.2 + Math.random() * 0.6; // Reduced amplitude
         this.oscillationOffset = Math.random() * Math.PI * 2;
         this.time = 0;
         
@@ -152,20 +172,32 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       update() {
-        // Increment time for oscillation
-        this.time += 0.01;
+        // Increment time for oscillation (drastically slower)
+        this.time += 0.001; // Drastically reduced
+        
+        // Gradually increase velocity from 0 to avoid initial aggressive movement
+        if (Math.abs(this.vx) < 0.05) {
+          this.vx += (Math.random() - 0.5) * 0.001;
+        }
+        if (Math.abs(this.vy) < 0.05) {
+          this.vy += (Math.random() - 0.5) * 0.001;
+        }
         
         // Apply base movement
         this.x += this.vx;
         this.y += this.vy;
         
-        // Apply oscillation if enabled
+        // Apply oscillation if enabled, with gradual increase
         if (this.oscillateX) {
-          this.x += Math.sin(this.time * this.oscillationSpeed + this.oscillationOffset) * this.oscillationAmplitude;
+          // Use a dampening factor that increases over time
+          const dampening = Math.min(1, this.time / 10);
+          this.x += Math.sin(this.time * this.oscillationSpeed + this.oscillationOffset) * this.oscillationAmplitude * dampening;
         }
         
         if (this.oscillateY) {
-          this.y += Math.cos(this.time * this.oscillationSpeed + this.oscillationOffset) * this.oscillationAmplitude;
+          // Use a dampening factor that increases over time
+          const dampening = Math.min(1, this.time / 10);
+          this.y += Math.cos(this.time * this.oscillationSpeed + this.oscillationOffset) * this.oscillationAmplitude * dampening;
         }
         
         // Boundary checking - reverse direction if hitting edge
@@ -243,15 +275,30 @@ document.addEventListener('DOMContentLoaded', () => {
         // Typing complete, update status
         setTimeout(() => {
           queryStatusText.textContent = "Query completed, found matching builders";
-          queryStatusIcon.classList.remove('running');
-          queryStatusIcon.classList.add('complete');
           
           // After a delay, clear for next query
           setTimeout(() => {
-            clearAndTypeNextQuery();
-          }, 4000);
+            // First fade out the current text
+            fadeOutText();
+          }, 3000);
         }, 1000);
       }
+    }
+    
+    // Fade out the query text
+    function fadeOutText() {
+      // Create a fade out effect by reducing opacity
+      let opacity = 1;
+      const fadeInterval = setInterval(() => {
+        opacity -= 0.1;
+        if (opacity <= 0) {
+          clearInterval(fadeInterval);
+          // Once faded out, clear and start next query
+          clearAndTypeNextQuery();
+        } else {
+          queryText.style.opacity = opacity;
+        }
+      }, 50);
     }
     
     // Clear query and type the next one
@@ -259,11 +306,11 @@ document.addEventListener('DOMContentLoaded', () => {
     function clearAndTypeNextQuery() {
       // Clear current query
       queryText.textContent = "";
+      // Reset opacity
+      queryText.style.opacity = 1;
       
       // Reset status
       queryStatusText.textContent = "Ready to search...";
-      queryStatusIcon.classList.remove('complete');
-      queryStatusIcon.classList.add('running');
       
       // Get next query
       currentQueryIndex = (currentQueryIndex + 1) % queries.length;
@@ -272,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Start typing after a delay
       setTimeout(() => {
         typeWriter(nextQuery);
-      }, 500);
+      }, 800);
     }
     
     // Animation loop for main animation
@@ -293,143 +340,264 @@ document.addEventListener('DOMContentLoaded', () => {
       requestAnimationFrame(animate);
     }
     
-    // HOW IT WORKS VISUALIZATION
+    // ADDRESS ANIMATION VISUALIZATION
     
-    // Wallet for how it works section
-    class HowWallet {
-      constructor(x, section) {
-        this.address = Math.random() < 0.6 ? generateBuilderENS() : generateHexAddress();
-        this.x = x;
-        this.y = howHeight * 0.3 + (Math.random() * howHeight * 0.4);
-        this.section = section; // 0 = left, 1 = middle, 2 = right
-        this.vx = 1 + Math.random() * 1;
-        this.opacity = 0.7 + Math.random() * 0.3;
-        this.size = 10 + Math.floor(Math.random() * 4);
-        this.targetPlatform = null; // Platform to connect to
-        this.connecting = false;
-        this.connected = false;
-        this.insightGenerated = false;
-        this.insight = null;
+    // Generate wallet address fragment (either hex or ENS)
+    function generateWalletFragment() {
+      // 30% chance of generating an ENS name instead of hex address
+      if (Math.random() < 0.3) {
+        return generateENSName();
+      } else {
+        const chars = '0123456789abcdef';
+        let fragment = '0x';
+        const length = 4 + Math.floor(Math.random() * 8); // Random length between 4-12 chars
+        for (let i = 0; i < length; i++) {
+          fragment += chars[Math.floor(Math.random() * chars.length)];
+        }
+        return fragment;
+      }
+    }
+    
+    // Generate ENS name
+    function generateENSName() {
+      const prefixes = ['vitalik', 'crypto', 'eth', 'nft', 'defi', 'based', 'punk', 'ape', 'degen', 'moon', 'pepe', 
+                     'trader', 'dao', 'meta', 'frens', 'anon', 'satoshi', 'hodl', 'web3', 'pixel'];
+      const suffixes = ['guy', 'dev', 'bro', 'lord', 'king', 'wizard', 'chad', 'bull', 'bear', 'whale', 'vc', 
+                     'founder', 'maxi', 'dude', 'ser', 'enjoyer', 'collector'];
+      
+      // Either prefix+suffix or just prefix
+      const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)];
+      
+      if (Math.random() < 0.3) {
+        // 30% chance of just using the prefix
+        return randomPrefix + '.eth';
+      } else {
+        // 70% chance of prefix+suffix
+        const randomSuffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+        return randomPrefix + randomSuffix + '.eth';
+      }
+    }
+    
+    // Wallet fragment class for address animation
+    class WalletFragment {
+      constructor() {
+        this.walletText = generateWalletFragment();
+        this.x = -200 - (Math.random() * 500); // Start off-screen to the left
+        
+        // Spread addresses across the entire y-axis with better distribution
+        // Divide the canvas height into 5 sections and place addresses in these sections
+        const section = Math.floor(Math.random() * 5); // 0-4
+        const sectionHeight = addressHeight / 5;
+        this.y = (section * sectionHeight) + (Math.random() * sectionHeight);
+        
+        // Slow down the animation speed
+        this.speedX = 0.5 + Math.random() * 1.0;  // Slower speed
+        
+        this.opacity = 0.8 + Math.random() * 0.2;
+        this.size = 12 + Math.floor(Math.random() * 4);
+        this.color = Math.random() > 0.85 ? baseBlue : '#ffffff';
+        this.hasPassedFilter = false;
+        this.insights = [];
       }
       
       update() {
-        // If on the left section, move right
-        if (this.section === 0) {
-          this.x += this.vx;
+        // If not yet at filter, move toward it
+        if (!this.hasPassedFilter) {
+          this.x += this.speedX;
           
-          // When reaching middle section
-          if (this.x > howWidth * 0.33 && !this.connecting) {
-            this.connecting = true;
-            
-            // Maybe connect to a platform
-            if (Math.random() < 0.3 && platforms.length > 0) {
-              const randomPlatform = platforms[Math.floor(Math.random() * platforms.length)];
-              this.targetPlatform = randomPlatform;
-            }
+          // Check if fragment has reached the filter
+          if (this.x > addressWidth / 2 - 20) {
+            this.hasPassedFilter = true;
+            this.generateInsights();
           }
-          
-          // When reaching right section
-          if (this.x > howWidth * 0.66) {
-            this.section = 2;
-            
-            // If connected to a platform, maybe generate an insight
-            if (this.targetPlatform && !this.insightGenerated && Math.random() < 0.7) {
-              this.generateInsight();
-            }
+        } else {
+          // Update insights
+          for (let insight of this.insights) {
+            insight.x += insight.speedX;
+            insight.opacity = Math.max(0, insight.opacity - 0.002); // Slower fade for more visibility
           }
         }
         
-        // If off right edge, reset to left
-        if (this.x > howWidth + 100) {
-          this.reset();
-        }
+        // Remove fragment if all insights have faded or gone off-screen
+        return !(this.hasPassedFilter && this.insights.every(i => i.opacity <= 0 || i.x > addressWidth));
       }
       
       draw() {
-        howCtx.globalAlpha = this.opacity;
-        howCtx.font = `${this.size}px monospace`;
+        // Draw wallet fragment
+        addressCtx.font = `${this.size}px monospace`;
+        addressCtx.fillStyle = this.color;
+        addressCtx.globalAlpha = this.hasPassedFilter ? this.opacity * 0.3 : this.opacity;
+        addressCtx.fillText(this.walletText, this.x, this.y);
+        addressCtx.globalAlpha = 1.0;
         
-        // Color based on connection status
-        if (this.targetPlatform) {
-          howCtx.fillStyle = this.targetPlatform.color;
-        } else {
-          howCtx.fillStyle = "#ffffff";
+        // Draw insights if passed filter
+        if (this.hasPassedFilter && this.insights.length > 0) {
+          // Calculate fan-out positions for insights
+          const fanRadius = 150; // Larger radius for fan
+          const fanAngleStart = -Math.PI/3; // Wider start angle (upper right)
+          const fanAngleEnd = Math.PI/3;    // Wider end angle (lower right)
+          
+          // Get shortened wallet name for display
+          const displayWallet = this.walletText.length > 15 
+            ? this.walletText.substring(0, 13) + '...' 
+            : this.walletText;
+            
+          // Update insight positions if needed for fan effect
+          if (!this.fanPositionsSet) {
+            const angleDelta = (fanAngleEnd - fanAngleStart) / (this.insights.length - 1 || 1);
+            
+            for (let i = 0; i < this.insights.length; i++) {
+              const angle = fanAngleStart + (angleDelta * i);
+              const insightX = this.x + 100 + Math.cos(angle) * fanRadius;
+              const insightY = this.y + Math.sin(angle) * fanRadius;
+              
+              this.insights[i].targetX = insightX;
+              this.insights[i].targetY = insightY;
+              
+              // Add slight movement toward target
+              const dx = (this.insights[i].targetX - this.insights[i].x) * 0.08;
+              const dy = (this.insights[i].targetY - this.insights[i].y) * 0.08;
+              
+              this.insights[i].x += dx;
+              this.insights[i].y += dy;
+            }
+            
+            this.fanPositionsSet = true;
+          }
+        
+          // Draw each insight
+          for (let i = 0; i < this.insights.length; i++) {
+            const insight = this.insights[i];
+            
+            // Draw insight text
+            addressCtx.font = `${this.size - 2}px sans-serif`;
+            addressCtx.fillStyle = insight.color;
+            addressCtx.globalAlpha = insight.opacity;
+            addressCtx.fillText(insight.text, insight.x, insight.y);
+            
+            // Draw connection line from wallet to insight
+            addressCtx.beginPath();
+            addressCtx.strokeStyle = insight.color;
+            addressCtx.lineWidth = 1;
+            addressCtx.globalAlpha = insight.opacity * 0.5;
+            addressCtx.moveTo(this.x + this.walletText.length * 5, this.y);
+            addressCtx.lineTo(insight.x, insight.y);
+            addressCtx.stroke();
+          }
+          
+          addressCtx.globalAlpha = 1.0;
         }
-        
-        // Draw wallet address
-        howCtx.fillText(this.address, this.x, this.y);
-        
-        // Draw connection to platform if connecting
-        if (this.connecting && this.targetPlatform) {
-          howCtx.beginPath();
-          howCtx.moveTo(this.x, this.y);
-          howCtx.lineTo(this.targetPlatform.x, this.targetPlatform.y);
-          howCtx.strokeStyle = this.targetPlatform.color;
-          howCtx.lineWidth = 1;
-          howCtx.setLineDash([2, 2]);
-          howCtx.stroke();
-          howCtx.setLineDash([]);
-        }
-        
-        howCtx.globalAlpha = 1.0;
       }
       
-      generateInsight() {
-        this.insightGenerated = true;
+      generateInsights() {
+        // Create a grouped set of insights for this wallet
         
-        // Create insight card
-        const insight = {
-          x: this.x + 20,
-          y: this.y - 60,
-          width: 160,
-          height: 100,
-          opacity: 0,
-          targetOpacity: 0.9,
-          platform: this.targetPlatform,
-          wallet: this,
-          content: this.generateInsightContent()
+        // Colors for different insight types
+        const colors = {
+          github: baseBlue,     // Blue for Github
+          farcaster: '#FFD700', // Yellow for Farcaster
+          gitcoin: '#FF4500'    // Red for Gitcoin
         };
         
-        insights.push(insight);
-        this.insight = insight;
-      }
-      
-      generateInsightContent() {
-        // Generate appropriate content based on platform
-        if (this.targetPlatform.name === "GitHub") {
-          return {
-            title: "Code Interest",
-            value: "Contributor to prediction market protocols"
-          };
-        } else if (this.targetPlatform.name === "Farcaster") {
-          return {
-            title: "Social Activity",
-            value: "Active in development discussions"
-          };
-        } else if (this.targetPlatform.name === "Mirror") {
-          return {
-            title: "Content Focus",
-            value: "Web3 Music & NFTs"
-          };
+        // Create 3-4 grouped insights for this wallet
+        const insightGroup = [];
+        
+        // Always include Github developer
+        insightGroup.push({
+          text: "Github developer",
+          color: colors.github,
+          type: 'github'
+        });
+        
+        // Add Farcaster OG if random
+        if (Math.random() > 0.3) {
+          insightGroup.push({
+            text: "Farcaster OG",
+            color: colors.farcaster,
+            type: 'farcaster'
+          });
         }
         
-        return {
-          title: "Builder Signal",
-          value: "Active in ecosystem"
-        };
+        // Add Gitcoin Donor if random
+        if (Math.random() > 0.4) {
+          insightGroup.push({
+            text: "Gitcoin Donor",
+            color: colors.gitcoin,
+            type: 'gitcoin'
+          });
+        }
+        
+        // Add random extra tags
+        const extraTags = ['DeFi User', 'NFT Collector', 'DAO Voter', 'L2 Bridge User', 'Staker'];
+        if (Math.random() > 0.5) {
+          const randomTag = extraTags[Math.floor(Math.random() * extraTags.length)];
+          insightGroup.push({
+            text: randomTag,
+            color: '#FFFFFF',
+            type: 'tag'
+          });
+        }
+        
+        // Position insights at the filter point initially
+        const baseY = this.y;
+        const baseX = addressWidth / 2;
+        
+        // Add all insights to the array with proper positioning for fan effect
+        for (let i = 0; i < insightGroup.length; i++) {
+          const insight = insightGroup[i];
+          this.insights.push({
+            text: insight.text,
+            x: baseX,
+            y: baseY,  // All start at same point for fan effect
+            targetX: 0, // Will be set in draw()
+            targetY: 0, // Will be set in draw()
+            speedX: 0.7 + Math.random() * 0.5, // Faster insight movement
+            color: insight.color,
+            opacity: 1.0,
+            type: insight.type
+          });
+        }
+      }
+    }
+    
+    // Array to store wallet fragments
+    const walletFragments = [];
+    
+    // Animation loop for address animation
+    function animateAddressAnimation() {
+      if (!addressAnimationCanvas || !addressCtx) return;
+      
+      // Clear canvas
+      addressCtx.clearRect(0, 0, addressWidth, addressHeight);
+      
+      // Add new wallet fragments randomly but less frequently
+      if (walletFragments.length < 10 && Math.random() < 0.02) {
+        walletFragments.push(new WalletFragment());
       }
       
-      reset() {
-        // Reset position to left side
-        this.x = -100 - Math.random() * 200;
-        this.y = howHeight * 0.3 + (Math.random() * howHeight * 0.4);
-        this.section = 0;
-        this.connecting = false;
-        this.connected = false;
-        this.targetPlatform = null;
-        this.insightGenerated = false;
-        this.insight = null;
+      // Update and draw wallet fragments
+      for (let i = walletFragments.length - 1; i >= 0; i--) {
+        const fragment = walletFragments[i];
+        const keepFragment = fragment.update();
+        fragment.draw();
+        
+        if (!keepFragment) {
+          walletFragments.splice(i, 1);
+        }
       }
+      
+      // Draw filter line in the middle
+      addressCtx.beginPath();
+      addressCtx.moveTo(addressWidth / 2, 0);
+      addressCtx.lineTo(addressWidth / 2, addressHeight);
+      addressCtx.strokeStyle = scannerBlue;
+      addressCtx.lineWidth = 2;
+      addressCtx.globalAlpha = 0.7;
+      addressCtx.stroke();
+      addressCtx.globalAlpha = 1.0;
+      
+      // Request next frame
+      requestAnimationFrame(animateAddressAnimation);
     }
     
     // Platform class
@@ -656,23 +824,32 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Initialize main animation
     function initialize() {
-      // Create initial wallets for main animation
-      for (let i = 0; i < 50; i++) {
-        wallets.push(new Wallet());
+      // Create initial wallets for main animation with pre-positioned locations
+      // This avoids the initial aggressive movement
+      for (let i = 0; i < 30; i++) {
+        const wallet = new Wallet();
+        // Set initial velocities to 0 to prevent initial jump
+        wallet.vx = 0;
+        wallet.vy = 0;
+        wallets.push(wallet);
       }
       
       // Start main animation
       animate();
       
-      // Add more wallets gradually
-      let addedCount = 50;
+      // Add more wallets gradually (at a much slower rate)
+      let addedCount = 30; // Start with fewer wallets
       const walletInterval = setInterval(() => {
         if (addedCount < maxWallets) {
-          wallets.push(new Wallet());
+          const wallet = new Wallet();
+          // Set initial velocities to 0 to prevent initial jump
+          wallet.vx = 0;
+          wallet.vy = 0;
+          wallets.push(wallet);
           addedCount++;
           
           // Update connections periodically
-          if (addedCount % 10 === 0) {
+          if (addedCount % 5 === 0) {
             createConnections();
           }
         } else {
@@ -680,17 +857,24 @@ document.addEventListener('DOMContentLoaded', () => {
           // Create final connections once all wallets are added
           createConnections();
         }
-      }, 50);
+      }, 300); // Much slower addition rate (300ms instead of 50ms)
       
       // Start cycling queries after a delay
       setTimeout(() => {
         // Start with first query
+        // Make sure the query box is visible and ready
+        queryText.style.opacity = 1;
+        queryText.textContent = "";
+        queryStatusText.textContent = "Ready to search...";
+        // Add a CSS class to ensure text-align is left
+        queryText.style.textAlign = 'left';
+        queryText.style.display = 'inline-block';
         typeWriter(queries[0]);
-      }, 1000);
+      }, 1500);
       
-      // Initialize how it works visualization if available
-      if (howCtx) {
-        initHowItWorksViz();
+      // Initialize address animation visualization
+      if (addressCtx) {
+        initAddressAnimation();
       }
     }
     
@@ -716,6 +900,30 @@ document.addEventListener('DOMContentLoaded', () => {
       
       // Start how it works animation
       animateHowItWorks();
+    }
+    
+    // Initialize address animation visualization
+    function initAddressAnimation() {
+      if (!addressAnimationCanvas || !addressCtx) return;
+      
+      // Clear any existing wallet fragments
+      walletFragments.length = 0;
+      
+      // Add initial wallet fragments with better distribution
+      // Create one wallet fragment for each section of the canvas
+      const sections = 5;
+      for (let i = 0; i < sections; i++) {
+        const fragment = new WalletFragment();
+        // Override the random y position to ensure even distribution
+        const sectionHeight = addressHeight / sections;
+        fragment.y = (i * sectionHeight) + (sectionHeight / 2);
+        // Stagger the x positions
+        fragment.x = -200 - (i * 150);
+        walletFragments.push(fragment);
+      }
+      
+      // Start animation
+      animateAddressAnimation();
     }
     
     // Start the application
