@@ -71,9 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const queries = [
       "Who is building dev tools for prediction markets on Base?",
       "What are the most interesting Arbitrum gaming hackathon projects?",
-      "Who is doing the best writing on Web3 culture on Farcaster?",
-      "Find builders contributing to Solidity libraries in the last 6 months",
-      "Which wallets are active in both Optimism governance and development?"
+      "Which protocols will be impacted if this DAO proposal passes?",
+      "Which Farcaster channels do my most engaged users belong to?"
     ];
     
     // Platform types for how it works
